@@ -1,0 +1,1191 @@
+<!DOCTYPE html>
+<!--
+╔══════════════════════════════════════════════════════════════════════════════╗
+║                          DIGITAL CV - FILE STRUCTURE                         ║
+╠══════════════════════════════════════════════════════════════════════════════╣
+║  Place this HTML file in a folder, then create the following structure:      ║
+║                                                                              ║
+║  📁 my-cv/                                                                   ║
+║     📄 digital-cv.html          ← This file                                 ║
+║     📁 assets/                                                               ║
+║        📁 photos/                                                            ║
+║           🖼️  profile.jpg        ← Your profile photo (hero section)        ║
+║           🖼️  photo1.jpg         ← Gallery images (any name, any order)     ║
+║           🖼️  photo2.jpg                                                     ║
+║           🖼️  project-photo.png                                              ║
+║        📁 reports/                                                           ║
+║           📄 report1.pdf         ← PDF reports (downloadable cards)         ║
+║           📄 annual-report.pdf                                               ║
+║        📁 presentations/                                                     ║
+║           📄 presentation1.pdf   ← Presentations converted to PDF           ║
+║           📄 q3-results.pdf      ← (Export .pptx to PDF in PowerPoint)      ║
+║                                                                              ║
+║  HOW TO ADD CONTENT:                                                         ║
+║  1. Photos:        Add images to assets/photos/ (update galleryPhotos array)║
+║  2. Reports:       Add PDFs to assets/reports/ (update reports array)        ║
+║  3. Presentations: Add PDFs to assets/presentations/ (update presentations) ║
+║  4. Profile photo: Replace assets/photos/profile.jpg                        ║
+║                                                                              ║
+║  HOW TO OPEN:                                                                ║
+║  Simply double-click the HTML file — no server or installation needed.      ║
+║  For PDF viewer, use a local server: python -m http.server 8000             ║
+║  Then open: http://localhost:8000/digital-cv.html                           ║
+╚══════════════════════════════════════════════════════════════════════════════╝
+-->
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Digital CV</title>
+
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <!-- PDF.js -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            serif: ['DM Serif Display', 'Georgia', 'serif'],
+            sans: ['DM Sans', 'system-ui', 'sans-serif'],
+          },
+          colors: {
+            ink:   { 50:'#f6f5f3', 100:'#edecea', 200:'#d6d3cf', 300:'#b8b4ad', 400:'#9a948b', 500:'#7c756a', 600:'#635d54', 700:'#504940', 800:'#3c3630', 900:'#2a2420', 950:'#1a1612' },
+            gold:  { 300:'#e8c97d', 400:'#ddb84a', 500:'#c9a227', 600:'#a88320', 700:'#876418' },
+            sage:  { 100:'#eef1ec', 200:'#d4dcd0', 300:'#b0bfa9', 400:'#8ba080', 500:'#6b8063', 600:'#526349', 700:'#3d4c36' },
+          },
+        }
+      }
+    }
+  </script>
+
+  <style>
+    :root {
+      --accent: #c9a227;
+      --accent-light: #e8c97d;
+    }
+
+    * { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'DM Sans', system-ui, sans-serif;
+      background: #f6f5f3;
+      color: #2a2420;
+      transition: background 0.3s, color 0.3s;
+    }
+
+    .dark body { background: #1a1612; color: #edecea; }
+
+    /* ── Grain overlay ─────────────────────────────────────────────── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.35;
+    }
+
+    /* ── Typography ────────────────────────────────────────────────── */
+    h1, h2, h3 { font-family: 'DM Serif Display', Georgia, serif; }
+
+    .section-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--accent);
+    }
+
+    /* ── Hero ──────────────────────────────────────────────────────── */
+    .hero-bg {
+      background: linear-gradient(135deg, #2a2420 0%, #3c3630 50%, #504940 100%);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      top: -40%; right: -20%;
+      width: 700px; height: 700px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(201,162,39,0.15) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .profile-ring {
+      background: linear-gradient(135deg, #c9a227, #e8c97d, #c9a227);
+      padding: 4px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* ── Navigation ────────────────────────────────────────────────── */
+    .nav-pill {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      padding: 0.45rem 1rem;
+      border-radius: 999px;
+      transition: all 0.2s;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .nav-pill:hover, .nav-pill.active {
+      background: var(--accent);
+      color: #fff;
+    }
+
+    .dark .nav-pill:hover, .dark .nav-pill.active {
+      color: #1a1612;
+    }
+
+    /* ── Timeline ──────────────────────────────────────────────────── */
+    .timeline-line {
+      position: absolute;
+      left: 0; top: 0; bottom: 0;
+      width: 2px;
+      background: linear-gradient(to bottom, var(--accent), transparent);
+    }
+
+    .timeline-dot {
+      width: 12px; height: 12px;
+      border-radius: 50%;
+      background: var(--accent);
+      border: 3px solid #f6f5f3;
+      box-shadow: 0 0 0 2px var(--accent);
+      flex-shrink: 0;
+    }
+
+    .dark .timeline-dot { border-color: #1a1612; }
+
+    /* ── Skill bars ────────────────────────────────────────────────── */
+    .skill-bar-bg {
+      background: #d6d3cf;
+      border-radius: 999px;
+      height: 6px;
+      overflow: hidden;
+    }
+
+    .dark .skill-bar-bg { background: #3c3630; }
+
+    .skill-bar-fill {
+      height: 100%;
+      border-radius: 999px;
+      background: linear-gradient(90deg, var(--accent), var(--accent-light));
+      transform-origin: left;
+      animation: growBar 1.2s ease forwards;
+      transform: scaleX(0);
+    }
+
+    @keyframes growBar {
+      to { transform: scaleX(1); }
+    }
+
+    /* ── Cards ─────────────────────────────────────────────────────── */
+    .card {
+      background: #fff;
+      border: 1px solid #d6d3cf;
+      border-radius: 1rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 32px rgba(42,36,32,0.12);
+    }
+
+    .dark .card {
+      background: #2a2420;
+      border-color: #504940;
+    }
+
+    .dark .card:hover {
+      box-shadow: 0 12px 32px rgba(0,0,0,0.4);
+    }
+
+    /* ── Gallery ───────────────────────────────────────────────────── */
+    .masonry {
+      columns: 3;
+      column-gap: 1rem;
+    }
+
+    @media (max-width: 768px) { .masonry { columns: 2; } }
+    @media (max-width: 480px) { .masonry { columns: 1; } }
+
+    .masonry-item {
+      break-inside: avoid;
+      margin-bottom: 1rem;
+      border-radius: 0.75rem;
+      overflow: hidden;
+      cursor: pointer;
+      position: relative;
+    }
+
+    .masonry-item img {
+      width: 100%;
+      display: block;
+      transition: transform 0.4s;
+    }
+
+    .masonry-item:hover img { transform: scale(1.04); }
+
+    .masonry-item .overlay {
+      position: absolute; inset: 0;
+      background: rgba(42,36,32,0.5);
+      opacity: 0;
+      transition: opacity 0.3s;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .masonry-item:hover .overlay { opacity: 1; }
+
+    /* ── Modal ─────────────────────────────────────────────────────── */
+    .modal {
+      position: fixed; inset: 0;
+      z-index: 1000;
+      display: flex; align-items: center; justify-content: center;
+      background: rgba(26,22,18,0.85);
+      backdrop-filter: blur(8px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.3s;
+    }
+
+    .modal.open { opacity: 1; pointer-events: all; }
+
+    .modal-content {
+      background: #fff;
+      border-radius: 1.25rem;
+      width: min(95vw, 900px);
+      max-height: 92vh;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+      box-shadow: 0 32px 80px rgba(0,0,0,0.4);
+      transform: scale(0.95);
+      transition: transform 0.3s;
+    }
+
+    .modal.open .modal-content { transform: scale(1); }
+
+    .dark .modal-content { background: #2a2420; }
+
+    #pdf-canvas { width: 100%; display: block; }
+
+    /* ── Language badges ───────────────────────────────────────────── */
+    .lang-badge {
+      display: inline-flex; align-items: center; gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 999px;
+      font-size: 0.85rem; font-weight: 500;
+      border: 1.5px solid var(--accent);
+      color: var(--accent);
+    }
+
+    /* ── Section fade-in ───────────────────────────────────────────── */
+    .fade-section {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.6s ease, transform 0.6s ease;
+    }
+
+    .fade-section.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* ── Sticky nav shadow ─────────────────────────────────────────── */
+    .sticky-nav {
+      position: sticky; top: 0; z-index: 100;
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+
+    .light-nav {
+      background: rgba(246,245,243,0.92);
+      border-bottom: 1px solid #d6d3cf;
+    }
+
+    .dark-nav {
+      background: rgba(26,22,18,0.92);
+      border-bottom: 1px solid #504940;
+    }
+
+    /* ── Tag chips ─────────────────────────────────────────────────── */
+    .tag-chip {
+      display: inline-block;
+      padding: 0.3rem 0.85rem;
+      border-radius: 999px;
+      font-size: 0.8rem;
+      font-weight: 500;
+      background: #eef1ec;
+      color: #526349;
+      border: 1px solid #d4dcd0;
+    }
+
+    .dark .tag-chip {
+      background: #3c3630;
+      color: #b0bfa9;
+      border-color: #504940;
+    }
+
+    /* ── Print ─────────────────────────────────────────────────────── */
+    @media print {
+      .no-print, .sticky-nav, .modal { display: none !important; }
+      .hero-bg { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    }
+
+    /* ── Dark mode overrides ───────────────────────────────────────── */
+    .dark body { background: #1a1612; color: #edecea; }
+    .dark .skill-bar-bg { background: #3c3630; }
+    .dark .section-label { color: #ddb84a; }
+
+    /* ── PDF canvas wrapper ────────────────────────────────────────── */
+    .pdf-viewer-wrap {
+      flex: 1;
+      overflow-y: auto;
+      background: #e5e5e5;
+      display: flex; flex-direction: column; align-items: center;
+      padding: 1rem;
+      gap: 0.75rem;
+    }
+
+    .dark .pdf-viewer-wrap { background: #1a1612; }
+
+    .pdf-page-canvas {
+      width: 100%;
+      max-width: 800px;
+      display: block;
+      border-radius: 4px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.15);
+    }
+
+    /* ── Scroll bar ────────────────────────────────────────────────── */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: #b8b4ad; border-radius: 999px; }
+    .dark ::-webkit-scrollbar-thumb { background: #504940; }
+  </style>
+</head>
+
+<body class="min-h-screen" id="body-root">
+
+  <!-- ═══ STICKY NAV ════════════════════════════════════════════════ -->
+  <nav class="sticky-nav light-nav dark:dark-nav no-print" id="main-nav">
+    <div class="max-w-6xl mx-auto px-4 py-2 flex items-center justify-between gap-4">
+      <span class="font-serif text-lg text-ink-800 dark:text-ink-100 hidden sm:block tracking-tight">
+        <span id="nav-name">Your Name</span>
+      </span>
+
+      <!-- Nav pills scroll container -->
+      <div class="flex items-center gap-1 overflow-x-auto flex-1 justify-center sm:justify-end scrollbar-hide" style="scrollbar-width:none">
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#about')">About</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#experience')">Experience</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#education')">Education</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#skills')">Skills</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#reports')">Reports</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#presentations')">Slides</button>
+        <button class="nav-pill text-ink-600 dark:text-ink-300" onclick="scrollTo('#gallery')">Gallery</button>
+      </div>
+
+      <!-- Dark mode toggle -->
+      <button id="theme-toggle" class="w-9 h-9 rounded-full flex items-center justify-center border border-ink-200 dark:border-ink-700 text-ink-600 dark:text-ink-300 hover:bg-gold-300 hover:border-gold-300 hover:text-ink-900 transition-all ml-1 flex-shrink-0" title="Toggle dark mode">
+        <i class="fa-solid fa-moon text-sm" id="theme-icon"></i>
+      </button>
+    </div>
+  </nav>
+
+  <!-- ═══ HERO ══════════════════════════════════════════════════════ -->
+  <header class="hero-bg py-20 px-6 relative" id="hero">
+    <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center gap-10 relative z-10">
+
+      <!-- Profile photo -->
+      <div class="flex-shrink-0">
+        <div class="profile-ring shadow-2xl">
+          <img
+            src="assets/photos/profile.jpg"
+            alt="Profile Photo"
+            onerror="this.src='https://ui-avatars.com/api/?name=Your+Name&size=180&background=504940&color=e8c97d&font-size=0.38'"
+            class="w-44 h-44 rounded-full object-cover object-center block"
+          />
+        </div>
+      </div>
+
+      <!-- Name & info -->
+      <div class="flex-1 text-center md:text-left">
+        <p class="section-label mb-3" style="color:#e8c97d">Available for opportunities</p>
+        <h1 class="text-5xl sm:text-6xl font-serif text-white leading-tight mb-3">
+          Your Name
+        </h1>
+        <p class="text-gold-300 text-xl font-light tracking-wide mb-6">
+          Your Job Title · Your Location
+        </p>
+
+        <!-- Contact row -->
+        <div class="flex flex-wrap items-center gap-x-5 gap-y-2 justify-center md:justify-start text-ink-300 text-sm mb-8">
+          <a href="mailto:you@email.com" class="flex items-center gap-2 hover:text-gold-300 transition-colors">
+            <i class="fa-solid fa-envelope"></i> you@email.com
+          </a>
+          <a href="tel:+1234567890" class="flex items-center gap-2 hover:text-gold-300 transition-colors">
+            <i class="fa-solid fa-phone"></i> +1 234 567 890
+          </a>
+          <span class="flex items-center gap-2">
+            <i class="fa-solid fa-location-dot"></i> Your City, Country
+          </span>
+        </div>
+
+        <!-- Social links -->
+        <div class="flex items-center gap-3 justify-center md:justify-start">
+          <a href="https://linkedin.com/in/yourprofile" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-all hover:scale-110" title="LinkedIn">
+            <i class="fa-brands fa-linkedin-in"></i>
+          </a>
+          <a href="https://github.com/yourprofile" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-all hover:scale-110" title="GitHub">
+            <i class="fa-brands fa-github"></i>
+          </a>
+          <a href="https://twitter.com/yourprofile" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-all hover:scale-110" title="X / Twitter">
+            <i class="fa-brands fa-x-twitter"></i>
+          </a>
+          <a href="https://yourwebsite.com" target="_blank" class="w-10 h-10 rounded-full bg-white/10 hover:bg-gold-500 flex items-center justify-center text-white transition-all hover:scale-110" title="Website">
+            <i class="fa-solid fa-globe"></i>
+          </a>
+          <!-- Download CV button -->
+          <a href="#" onclick="window.print(); return false;" class="ml-2 flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold-500 hover:bg-gold-400 text-ink-950 font-semibold text-sm transition-all hover:scale-105 shadow-lg">
+            <i class="fa-solid fa-download"></i> Download CV
+          </a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- ═══ MAIN CONTENT ══════════════════════════════════════════════ -->
+  <main class="max-w-5xl mx-auto px-4 sm:px-6 pb-24">
+
+    <!-- ── ABOUT ──────────────────────────────────────────────────── -->
+    <section id="about" class="fade-section pt-20 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-4">Who I Am</p>
+      <div class="grid md:grid-cols-3 gap-12 items-start">
+        <div class="md:col-span-2">
+          <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-6 leading-snug">
+            A passionate professional<br/><em>building meaningful work.</em>
+          </h2>
+          <div class="space-y-4 text-ink-600 dark:text-ink-300 leading-relaxed text-base">
+            <p>
+              Write your personal summary here. Describe your professional identity, what drives you, and the kind of impact you aim to create. This is your chance to connect with the reader beyond the bullet points.
+            </p>
+            <p>
+              Highlight your key strengths, your approach to work, and what makes you uniquely valuable. Keep it authentic, focused, and compelling — two to three paragraphs works well.
+            </p>
+          </div>
+        </div>
+
+        <!-- Key stats -->
+        <div class="grid grid-cols-2 gap-4">
+          <div class="card p-5 text-center">
+            <div class="text-3xl font-serif text-gold-500 mb-1">8+</div>
+            <div class="text-xs text-ink-500 dark:text-ink-400 font-medium uppercase tracking-wider">Years Exp.</div>
+          </div>
+          <div class="card p-5 text-center">
+            <div class="text-3xl font-serif text-gold-500 mb-1">30+</div>
+            <div class="text-xs text-ink-500 dark:text-ink-400 font-medium uppercase tracking-wider">Projects</div>
+          </div>
+          <div class="card p-5 text-center">
+            <div class="text-3xl font-serif text-gold-500 mb-1">5</div>
+            <div class="text-xs text-ink-500 dark:text-ink-400 font-medium uppercase tracking-wider">Companies</div>
+          </div>
+          <div class="card p-5 text-center">
+            <div class="text-3xl font-serif text-gold-500 mb-1">3</div>
+            <div class="text-xs text-ink-500 dark:text-ink-400 font-medium uppercase tracking-wider">Languages</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── EXPERIENCE ─────────────────────────────────────────────── -->
+    <section id="experience" class="fade-section pt-16 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-3">Career Path</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-12">Work Experience</h2>
+
+      <div class="relative pl-8">
+        <div class="timeline-line"></div>
+
+        <!-- Experience item template — duplicate as needed -->
+        <div class="timeline-item relative mb-12 last:mb-0" id="exp-items">
+          <!-- Item 1 -->
+          <div class="flex gap-6 mb-12">
+            <div class="timeline-dot mt-1.5 -ml-10"></div>
+            <div class="flex-1 card p-6">
+              <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h3 class="text-xl font-serif text-ink-900 dark:text-ink-100">Senior Job Title</h3>
+                  <p class="text-gold-600 dark:text-gold-400 font-medium text-sm mt-0.5">Company Name · Full-time</p>
+                </div>
+                <span class="text-xs font-medium text-ink-400 dark:text-ink-500 bg-ink-100 dark:bg-ink-800 px-3 py-1 rounded-full whitespace-nowrap">
+                  Jan 2022 – Present
+                </span>
+              </div>
+              <p class="text-ink-600 dark:text-ink-300 text-sm leading-relaxed mb-4">
+                Describe your role, responsibilities, and the impact you made. Focus on outcomes and achievements rather than duties — use numbers where possible.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag-chip">Strategy</span>
+                <span class="tag-chip">Leadership</span>
+                <span class="tag-chip">Data Analysis</span>
+                <span class="tag-chip">Stakeholder Mgmt</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 2 -->
+          <div class="flex gap-6 mb-12">
+            <div class="timeline-dot mt-1.5 -ml-10"></div>
+            <div class="flex-1 card p-6">
+              <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h3 class="text-xl font-serif text-ink-900 dark:text-ink-100">Previous Job Title</h3>
+                  <p class="text-gold-600 dark:text-gold-400 font-medium text-sm mt-0.5">Previous Company · Full-time</p>
+                </div>
+                <span class="text-xs font-medium text-ink-400 dark:text-ink-500 bg-ink-100 dark:bg-ink-800 px-3 py-1 rounded-full whitespace-nowrap">
+                  Mar 2019 – Dec 2021
+                </span>
+              </div>
+              <p class="text-ink-600 dark:text-ink-300 text-sm leading-relaxed mb-4">
+                Describe your previous role here. Highlight key achievements, tools used, and the value you delivered. Two to three sentences is ideal.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag-chip">Project Management</span>
+                <span class="tag-chip">Research</span>
+                <span class="tag-chip">Presentations</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Item 3 -->
+          <div class="flex gap-6">
+            <div class="timeline-dot mt-1.5 -ml-10"></div>
+            <div class="flex-1 card p-6">
+              <div class="flex flex-wrap items-start justify-between gap-3 mb-3">
+                <div>
+                  <h3 class="text-xl font-serif text-ink-900 dark:text-ink-100">Junior Job Title</h3>
+                  <p class="text-gold-600 dark:text-gold-400 font-medium text-sm mt-0.5">Earlier Company · Part-time</p>
+                </div>
+                <span class="text-xs font-medium text-ink-400 dark:text-ink-500 bg-ink-100 dark:bg-ink-800 px-3 py-1 rounded-full whitespace-nowrap">
+                  Jun 2017 – Feb 2019
+                </span>
+              </div>
+              <p class="text-ink-600 dark:text-ink-300 text-sm leading-relaxed mb-4">
+                Your earliest professional experience. Describe what you learned, the skills you developed, and how it shaped your career trajectory.
+              </p>
+              <div class="flex flex-wrap gap-2">
+                <span class="tag-chip">Communication</span>
+                <span class="tag-chip">Coordination</span>
+                <span class="tag-chip">Analysis</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── EDUCATION ──────────────────────────────────────────────── -->
+    <section id="education" class="fade-section pt-16 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-3">Academic Background</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-10">Education</h2>
+
+      <div class="grid sm:grid-cols-2 gap-5">
+        <!-- Edu card 1 -->
+        <div class="card p-6">
+          <div class="w-12 h-12 rounded-xl bg-gold-100 dark:bg-ink-800 flex items-center justify-center mb-4">
+            <i class="fa-solid fa-graduation-cap text-gold-600 dark:text-gold-400 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-serif text-ink-900 dark:text-ink-100 mb-1">Master of Science</h3>
+          <p class="text-gold-600 dark:text-gold-400 font-medium text-sm mb-2">Your Field of Study</p>
+          <p class="text-ink-500 dark:text-ink-400 text-sm mb-3">University Name · City, Country</p>
+          <span class="text-xs font-medium text-ink-400 dark:text-ink-500 bg-ink-100 dark:bg-ink-800 px-3 py-1 rounded-full">2015 – 2017</span>
+          <p class="text-ink-600 dark:text-ink-300 text-sm mt-4 leading-relaxed">
+            Thesis: "Your Thesis Title Here" — Brief description of your research focus or academic achievements.
+          </p>
+        </div>
+
+        <!-- Edu card 2 -->
+        <div class="card p-6">
+          <div class="w-12 h-12 rounded-xl bg-sage-100 dark:bg-ink-800 flex items-center justify-center mb-4">
+            <i class="fa-solid fa-university text-sage-600 dark:text-sage-400 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-serif text-ink-900 dark:text-ink-100 mb-1">Bachelor of Arts</h3>
+          <p class="text-gold-600 dark:text-gold-400 font-medium text-sm mb-2">Your Undergraduate Major</p>
+          <p class="text-ink-500 dark:text-ink-400 text-sm mb-3">University Name · City, Country</p>
+          <span class="text-xs font-medium text-ink-400 dark:text-ink-500 bg-ink-100 dark:bg-ink-800 px-3 py-1 rounded-full">2011 – 2015</span>
+          <p class="text-ink-600 dark:text-ink-300 text-sm mt-4 leading-relaxed">
+            Graduated with honors. Relevant coursework and any notable achievements, clubs, or distinctions.
+          </p>
+        </div>
+
+        <!-- Certification card -->
+        <div class="card p-6 sm:col-span-2">
+          <div class="w-12 h-12 rounded-xl bg-ink-100 dark:bg-ink-800 flex items-center justify-center mb-4">
+            <i class="fa-solid fa-certificate text-gold-600 dark:text-gold-400 text-xl"></i>
+          </div>
+          <h3 class="text-lg font-serif text-ink-900 dark:text-ink-100 mb-4">Certifications & Courses</h3>
+          <div class="grid sm:grid-cols-3 gap-3">
+            <div class="text-sm">
+              <p class="font-medium text-ink-800 dark:text-ink-200">Certification Name</p>
+              <p class="text-ink-500 dark:text-ink-400 text-xs mt-0.5">Issuing Organization · 2023</p>
+            </div>
+            <div class="text-sm">
+              <p class="font-medium text-ink-800 dark:text-ink-200">Professional Certificate</p>
+              <p class="text-ink-500 dark:text-ink-400 text-xs mt-0.5">Platform/Organization · 2022</p>
+            </div>
+            <div class="text-sm">
+              <p class="font-medium text-ink-800 dark:text-ink-200">Online Course / Badge</p>
+              <p class="text-ink-500 dark:text-ink-400 text-xs mt-0.5">Provider · 2021</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── SKILLS + LANGUAGES ─────────────────────────────────────── -->
+    <section id="skills" class="fade-section pt-16 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-3">Capabilities</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-10">Skills & Languages</h2>
+
+      <div class="grid md:grid-cols-2 gap-12">
+        <!-- Skill bars -->
+        <div>
+          <h3 class="text-sm font-semibold uppercase tracking-widest text-ink-500 dark:text-ink-400 mb-6">Core Skills</h3>
+          <div class="space-y-5" id="skill-bars">
+            <!-- Skills are rendered by JS below -->
+          </div>
+        </div>
+
+        <!-- Right col: tools + languages -->
+        <div class="space-y-10">
+          <!-- Tool tags -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-widest text-ink-500 dark:text-ink-400 mb-4">Tools & Technologies</h3>
+            <div class="flex flex-wrap gap-2" id="tool-tags">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+
+          <!-- Languages -->
+          <div>
+            <h3 class="text-sm font-semibold uppercase tracking-widest text-ink-500 dark:text-ink-400 mb-4">Languages</h3>
+            <div class="flex flex-wrap gap-3" id="languages">
+              <!-- Rendered by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── REPORTS ─────────────────────────────────────────────────── -->
+    <section id="reports" class="fade-section pt-16 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-3">Published Work</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-10">Reports</h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="reports-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── PRESENTATIONS ──────────────────────────────────────────── -->
+    <section id="presentations" class="fade-section pt-16 pb-16 border-b border-ink-200 dark:border-ink-800">
+      <p class="section-label mb-3">Presentations</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-10">Slides & Decks</h2>
+
+      <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="presentations-grid">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+    <!-- ── GALLERY ────────────────────────────────────────────────── -->
+    <section id="gallery" class="fade-section pt-16">
+      <p class="section-label mb-3">Visual Portfolio</p>
+      <h2 class="text-4xl font-serif text-ink-900 dark:text-ink-100 mb-10">Photo Gallery</h2>
+
+      <div class="masonry" id="photo-gallery">
+        <!-- Rendered by JS -->
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ═══ FOOTER ════════════════════════════════════════════════════ -->
+  <footer class="bg-ink-900 dark:bg-ink-950 text-ink-400 py-10 px-6 text-center mt-10 no-print">
+    <p class="font-serif text-white text-xl mb-2">Your Name</p>
+    <p class="text-sm mb-4">Your Job Title</p>
+    <div class="flex items-center justify-center gap-5 text-sm mb-6">
+      <a href="mailto:you@email.com" class="hover:text-gold-400 transition-colors">you@email.com</a>
+      <span class="text-ink-700">·</span>
+      <a href="https://linkedin.com" target="_blank" class="hover:text-gold-400 transition-colors">LinkedIn</a>
+      <span class="text-ink-700">·</span>
+      <a href="#" onclick="window.print(); return false;" class="hover:text-gold-400 transition-colors">Print / Save</a>
+    </div>
+    <p class="text-xs text-ink-600">Built with pure HTML, CSS & JS · No backend · No paid services</p>
+  </footer>
+
+  <!-- ═══ PDF VIEWER MODAL ══════════════════════════════════════════ -->
+  <div class="modal no-print" id="pdf-modal">
+    <div class="modal-content">
+      <!-- Modal header -->
+      <div class="flex items-center justify-between px-5 py-4 border-b border-ink-200 dark:border-ink-700">
+        <div>
+          <h3 class="font-serif text-lg text-ink-900 dark:text-ink-100" id="modal-title">Document</h3>
+          <p class="text-xs text-ink-400 dark:text-ink-500 mt-0.5" id="modal-page-info">Loading…</p>
+        </div>
+        <div class="flex items-center gap-2">
+          <!-- Navigation -->
+          <button onclick="pdfViewer.prevPage()" class="w-8 h-8 rounded-full border border-ink-200 dark:border-ink-700 flex items-center justify-center text-ink-600 dark:text-ink-300 hover:bg-gold-100 dark:hover:bg-ink-800 transition-all text-sm" id="btn-prev">
+            <i class="fa-solid fa-chevron-left"></i>
+          </button>
+          <button onclick="pdfViewer.nextPage()" class="w-8 h-8 rounded-full border border-ink-200 dark:border-ink-700 flex items-center justify-center text-ink-600 dark:text-ink-300 hover:bg-gold-100 dark:hover:bg-ink-800 transition-all text-sm" id="btn-next">
+            <i class="fa-solid fa-chevron-right"></i>
+          </button>
+          <!-- Download -->
+          <a id="modal-download" href="#" download class="w-8 h-8 rounded-full border border-ink-200 dark:border-ink-700 flex items-center justify-center text-ink-600 dark:text-ink-300 hover:bg-gold-100 dark:hover:bg-ink-800 transition-all text-sm" title="Download">
+            <i class="fa-solid fa-download"></i>
+          </a>
+          <!-- Close -->
+          <button onclick="closePdfModal()" class="w-8 h-8 rounded-full border border-ink-200 dark:border-ink-700 flex items-center justify-center text-ink-600 dark:text-ink-300 hover:bg-red-50 hover:border-red-200 hover:text-red-500 dark:hover:bg-red-900/20 transition-all text-sm">
+            <i class="fa-solid fa-xmark"></i>
+          </button>
+        </div>
+      </div>
+      <!-- PDF render area -->
+      <div class="pdf-viewer-wrap" id="pdf-render-area">
+        <div class="flex flex-col items-center justify-center h-40 text-ink-400">
+          <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
+          <span class="text-sm">Loading PDF…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ LIGHTBOX ══════════════════════════════════════════════════ -->
+  <div class="modal no-print" id="lightbox">
+    <div class="relative max-w-4xl w-full mx-4">
+      <button onclick="closeLightbox()" class="absolute -top-12 right-0 text-white/70 hover:text-white text-2xl transition-colors">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <img id="lightbox-img" src="" alt="Gallery image" class="w-full rounded-xl max-h-[85vh] object-contain" />
+      <p id="lightbox-caption" class="text-white/70 text-sm text-center mt-3"></p>
+    </div>
+  </div>
+
+  <!-- ═══ SCRIPTS ═══════════════════════════════════════════════════ -->
+  <script>
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  ★  EDIT YOUR CONTENT HERE  ★
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    const CV_DATA = {
+
+      name: "Your Name",  // ← CHANGE THIS (also update nav, hero HTML above)
+
+      // ── Skills (bars) ─────────────────────────────────────────────
+      skills: [
+        { name: "Strategic Planning",    pct: 92 },
+        { name: "Data Analysis",         pct: 85 },
+        { name: "Project Management",    pct: 88 },
+        { name: "Stakeholder Relations", pct: 90 },
+        { name: "Public Speaking",       pct: 78 },
+        { name: "Financial Modelling",   pct: 72 },
+      ],
+
+      // ── Tool tags ─────────────────────────────────────────────────
+      tools: [
+        "Microsoft Office","Power BI","Tableau","Excel",
+        "Python","SQL","Figma","Notion","Slack","Jira",
+        "Google Workspace","HubSpot","Salesforce",
+      ],
+
+      // ── Languages ─────────────────────────────────────────────────
+      languages: [
+        { name: "English",  level: "Native",       flag: "🇬🇧" },
+        { name: "Spanish",  level: "Professional", flag: "🇪🇸" },
+        { name: "French",   level: "Conversational",flag: "🇫🇷" },
+      ],
+
+      // ── Reports ────────────────────────────────────────────────────
+      // Place PDF files in:  assets/reports/
+      reports: [
+        {
+          file:  "assets/reports/annual-report-2023.pdf",
+          title: "Annual Report 2023",
+          date:  "December 2023",
+          desc:  "Comprehensive review of organisational performance, key metrics, and strategic outlook for the coming year.",
+          icon:  "fa-chart-bar"
+        },
+        {
+          file:  "assets/reports/market-analysis-2024.pdf",
+          title: "Market Analysis 2024",
+          date:  "March 2024",
+          desc:  "In-depth analysis of market trends, competitive landscape, and emerging opportunities in the sector.",
+          icon:  "fa-magnifying-glass-chart"
+        },
+        {
+          file:  "assets/reports/sustainability-report.pdf",
+          title: "Sustainability Report",
+          date:  "June 2023",
+          desc:  "Overview of ESG initiatives, carbon footprint reduction progress, and community engagement outcomes.",
+          icon:  "fa-leaf"
+        },
+      ],
+
+      // ── Presentations ──────────────────────────────────────────────
+      // Export your .pptx files as PDF, then place in:  assets/presentations/
+      presentations: [
+        {
+          file:  "assets/presentations/q3-results.pdf",
+          title: "Q3 Results Presentation",
+          date:  "October 2023",
+          desc:  "Quarterly business review delivered to the board, covering financial results and strategic initiatives.",
+          color: "#c9a227"
+        },
+        {
+          file:  "assets/presentations/strategy-2025.pdf",
+          title: "Strategy 2025",
+          date:  "January 2024",
+          desc:  "Five-year strategic plan outlining growth pillars, investment priorities, and key performance targets.",
+          color: "#6b8063"
+        },
+        {
+          file:  "assets/presentations/conference-keynote.pdf",
+          title: "Industry Conference Keynote",
+          date:  "May 2023",
+          desc:  "Keynote address delivered at the annual sector conference on the future of digital transformation.",
+          color: "#7c756a"
+        },
+      ],
+
+      // ── Gallery photos ─────────────────────────────────────────────
+      // Place image files in:  assets/photos/
+      photos: [
+        { src: "assets/photos/photo1.jpg",         caption: "Project launch event" },
+        { src: "assets/photos/photo2.jpg",         caption: "Team workshop" },
+        { src: "assets/photos/photo3.jpg",         caption: "Conference presentation" },
+        { src: "assets/photos/photo4.jpg",         caption: "Site visit" },
+        { src: "assets/photos/photo5.jpg",         caption: "Award ceremony" },
+        { src: "assets/photos/project-photo.png",  caption: "Project milestone" },
+      ],
+    };
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  RENDER FUNCTIONS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    // Update nav name
+    document.getElementById('nav-name').textContent = CV_DATA.name;
+
+    // ── Skill bars ────────────────────────────────────────────────
+    const skillsEl = document.getElementById('skill-bars');
+    CV_DATA.skills.forEach(s => {
+      skillsEl.innerHTML += `
+        <div>
+          <div class="flex justify-between items-baseline mb-1.5">
+            <span class="text-sm font-medium text-ink-700 dark:text-ink-300">${s.name}</span>
+            <span class="text-xs text-ink-400 dark:text-ink-500">${s.pct}%</span>
+          </div>
+          <div class="skill-bar-bg">
+            <div class="skill-bar-fill" style="width:${s.pct}%"></div>
+          </div>
+        </div>`;
+    });
+
+    // ── Tools ────────────────────────────────────────────────────
+    const toolsEl = document.getElementById('tool-tags');
+    CV_DATA.tools.forEach(t => {
+      toolsEl.innerHTML += `<span class="tag-chip">${t}</span>`;
+    });
+
+    // ── Languages ────────────────────────────────────────────────
+    const langsEl = document.getElementById('languages');
+    CV_DATA.languages.forEach(l => {
+      langsEl.innerHTML += `
+        <div class="lang-badge">
+          <span class="text-lg leading-none">${l.flag}</span>
+          <div>
+            <div class="font-semibold leading-none">${l.name}</div>
+            <div style="font-size:0.7rem;opacity:0.75;margin-top:2px">${l.level}</div>
+          </div>
+        </div>`;
+    });
+
+    // ── Reports ──────────────────────────────────────────────────
+    const reportsEl = document.getElementById('reports-grid');
+    CV_DATA.reports.forEach(r => {
+      reportsEl.innerHTML += `
+        <div class="card p-5 flex flex-col">
+          <div class="w-10 h-10 rounded-lg bg-gold-100 dark:bg-ink-800 flex items-center justify-center mb-4 flex-shrink-0">
+            <i class="fa-solid ${r.icon} text-gold-600 dark:text-gold-400"></i>
+          </div>
+          <h3 class="font-serif text-base text-ink-900 dark:text-ink-100 mb-1">${r.title}</h3>
+          <p class="text-xs text-ink-400 dark:text-ink-500 mb-3">${r.date}</p>
+          <p class="text-sm text-ink-600 dark:text-ink-300 leading-relaxed flex-1 mb-5">${r.desc}</p>
+          <div class="flex gap-2">
+            <button onclick="openPdfModal('${r.file}','${r.title}')"
+              class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-ink-100 dark:bg-ink-800 text-ink-700 dark:text-ink-300 text-xs font-semibold hover:bg-gold-100 dark:hover:bg-ink-700 transition-all">
+              <i class="fa-solid fa-eye"></i> Preview
+            </button>
+            <a href="${r.file}" download
+              class="flex-1 flex items-center justify-center gap-2 py-2 rounded-lg bg-gold-500 hover:bg-gold-400 text-ink-950 text-xs font-semibold transition-all">
+              <i class="fa-solid fa-download"></i> Download
+            </a>
+          </div>
+        </div>`;
+    });
+
+    // ── Presentations ────────────────────────────────────────────
+    const presEl = document.getElementById('presentations-grid');
+    CV_DATA.presentations.forEach(p => {
+      presEl.innerHTML += `
+        <div class="card p-5 flex flex-col cursor-pointer group" onclick="openPdfModal('${p.file}','${p.title}')">
+          <!-- Thumbnail placeholder -->
+          <div class="w-full h-32 rounded-lg mb-4 flex items-center justify-center relative overflow-hidden"
+               style="background:linear-gradient(135deg,${p.color}22,${p.color}44)">
+            <i class="fa-solid fa-file-powerpoint text-4xl" style="color:${p.color};opacity:0.7"></i>
+            <div class="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity"
+                 style="background:${p.color}dd">
+              <span class="text-white font-semibold text-sm flex items-center gap-2">
+                <i class="fa-solid fa-play-circle text-lg"></i> Open Viewer
+              </span>
+            </div>
+          </div>
+          <h3 class="font-serif text-base text-ink-900 dark:text-ink-100 mb-1">${p.title}</h3>
+          <p class="text-xs text-ink-400 dark:text-ink-500 mb-3">${p.date}</p>
+          <p class="text-sm text-ink-600 dark:text-ink-300 leading-relaxed flex-1 mb-4">${p.desc}</p>
+          <div class="flex gap-2">
+            <span class="flex-1 text-center py-2 rounded-lg text-xs font-semibold transition-all text-white"
+                  style="background:${p.color}">
+              <i class="fa-solid fa-presentation-screen mr-1"></i> View Slides
+            </span>
+          </div>
+        </div>`;
+    });
+
+    // ── Gallery ──────────────────────────────────────────────────
+    const galleryEl = document.getElementById('photo-gallery');
+    CV_DATA.photos.forEach((photo, i) => {
+      galleryEl.innerHTML += `
+        <div class="masonry-item" onclick="openLightbox('${photo.src}','${photo.caption}')">
+          <img src="${photo.src}"
+               alt="${photo.caption}"
+               onerror="this.parentElement.style.display='none'"
+               loading="lazy" />
+          <div class="overlay">
+            <div class="text-center text-white px-4">
+              <i class="fa-solid fa-expand text-2xl mb-2"></i>
+              <p class="text-sm font-medium">${photo.caption}</p>
+            </div>
+          </div>
+        </div>`;
+    });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  PDF VIEWER (PDF.js)
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    pdfjsLib.GlobalWorkerOptions.workerSrc =
+      'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+    const pdfViewer = {
+      pdfDoc:   null,
+      currPage: 1,
+      totalPages: 0,
+
+      async load(url) {
+        const area = document.getElementById('pdf-render-area');
+        area.innerHTML = `
+          <div class="flex flex-col items-center justify-center h-40 text-ink-400">
+            <i class="fa-solid fa-spinner fa-spin text-3xl mb-3"></i>
+            <span class="text-sm">Loading PDF…</span>
+          </div>`;
+        try {
+          this.pdfDoc = await pdfjsLib.getDocument(url).promise;
+          this.totalPages = this.pdfDoc.numPages;
+          this.currPage = 1;
+          area.innerHTML = '';
+          await this.renderAll();
+          this.updateInfo();
+        } catch (e) {
+          area.innerHTML = `
+            <div class="flex flex-col items-center justify-center h-40 text-ink-400 p-8 text-center">
+              <i class="fa-solid fa-triangle-exclamation text-3xl mb-3 text-gold-500"></i>
+              <p class="text-sm font-medium text-ink-600 dark:text-ink-300 mb-2">Could not load PDF</p>
+              <p class="text-xs text-ink-400 dark:text-ink-500">
+                Make sure the file exists in the correct folder and you're using a local server
+                (<code class="bg-ink-100 dark:bg-ink-800 px-1 rounded">python -m http.server 8000</code>).
+              </p>
+            </div>`;
+        }
+      },
+
+      async renderAll() {
+        const area = document.getElementById('pdf-render-area');
+        for (let i = 1; i <= this.totalPages; i++) {
+          const page = await this.pdfDoc.getPage(i);
+          const viewport = page.getViewport({ scale: 1.6 });
+          const canvas = document.createElement('canvas');
+          canvas.className = 'pdf-page-canvas';
+          canvas.width  = viewport.width;
+          canvas.height = viewport.height;
+          canvas.id = `pdf-page-${i}`;
+          area.appendChild(canvas);
+          await page.render({ canvasContext: canvas.getContext('2d'), viewport }).promise;
+        }
+      },
+
+      prevPage() {
+        if (this.currPage <= 1) return;
+        this.currPage--;
+        const c = document.getElementById(`pdf-page-${this.currPage}`);
+        if (c) c.scrollIntoView({ behavior: 'smooth' });
+        this.updateInfo();
+      },
+
+      nextPage() {
+        if (this.currPage >= this.totalPages) return;
+        this.currPage++;
+        const c = document.getElementById(`pdf-page-${this.currPage}`);
+        if (c) c.scrollIntoView({ behavior: 'smooth' });
+        this.updateInfo();
+      },
+
+      updateInfo() {
+        document.getElementById('modal-page-info').textContent =
+          `Page ${this.currPage} of ${this.totalPages}`;
+      }
+    };
+
+    function openPdfModal(url, title) {
+      const modal = document.getElementById('pdf-modal');
+      document.getElementById('modal-title').textContent = title;
+      document.getElementById('modal-download').href = url;
+      document.getElementById('modal-download').download = url.split('/').pop();
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+      pdfViewer.load(url);
+    }
+
+    function closePdfModal() {
+      document.getElementById('pdf-modal').classList.remove('open');
+      document.body.style.overflow = '';
+      document.getElementById('pdf-render-area').innerHTML = '';
+      pdfViewer.pdfDoc = null;
+    }
+
+    document.getElementById('pdf-modal').addEventListener('click', function(e) {
+      if (e.target === this) closePdfModal();
+    });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  LIGHTBOX
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    function openLightbox(src, caption) {
+      document.getElementById('lightbox-img').src = src;
+      document.getElementById('lightbox-caption').textContent = caption;
+      document.getElementById('lightbox').classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+      document.getElementById('lightbox').classList.remove('open');
+      document.body.style.overflow = '';
+    }
+
+    document.getElementById('lightbox').addEventListener('click', function(e) {
+      if (e.target === this) closeLightbox();
+    });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  DARK MODE
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    const html = document.documentElement;
+    const themeBtn  = document.getElementById('theme-toggle');
+    const themeIcon = document.getElementById('theme-icon');
+    const nav       = document.getElementById('main-nav');
+
+    function applyTheme(dark) {
+      if (dark) {
+        html.classList.add('dark');
+        nav.classList.replace('light-nav', 'dark-nav');
+        themeIcon.className = 'fa-solid fa-sun text-sm';
+      } else {
+        html.classList.remove('dark');
+        nav.classList.replace('dark-nav', 'light-nav');
+        themeIcon.className = 'fa-solid fa-moon text-sm';
+      }
+      localStorage.setItem('theme', dark ? 'dark' : 'light');
+    }
+
+    // Init from saved preference or system preference
+    const saved = localStorage.getItem('theme');
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    applyTheme(saved === 'dark' || (!saved && prefersDark));
+
+    themeBtn.addEventListener('click', () => {
+      applyTheme(!html.classList.contains('dark'));
+    });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  SCROLL HELPERS
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    function scrollTo(selector) {
+      const el = document.querySelector(selector);
+      if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    // Keyboard close
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape') { closePdfModal(); closeLightbox(); }
+    });
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  INTERSECTION OBSERVER — fade-in on scroll
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.08 });
+
+    document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+    //  ACTIVE NAV PILL on scroll
+    // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+    const sections  = ['about','experience','education','skills','reports','presentations','gallery'];
+    const navBtns   = document.querySelectorAll('.nav-pill');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+      sections.forEach(id => {
+        const el = document.getElementById(id);
+        if (el && window.scrollY >= el.offsetTop - 120) current = id;
+      });
+      navBtns.forEach(btn => {
+        const target = btn.getAttribute('onclick')?.match(/#(\w+)/)?.[1];
+        btn.classList.toggle('active', target === current);
+      });
+    }, { passive: true });
+  </script>
+</body>
+</html>
