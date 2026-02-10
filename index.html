@@ -245,8 +245,9 @@
     .pdf-page-canvas { width: 100%; max-width: 800px; display: block; border-radius: 4px; box-shadow: 0 2px 12px rgba(0,0,0,0.15); }
 
     /* ── Fade in ───────────────────────────────────────────────── */
-    .fade-section { opacity: 0; transform: translateY(18px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .fade-section.visible { opacity: 1; transform: translateY(0); }
+    .fade-section { opacity: 1; transform: translateY(0); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .js-fade .fade-section { opacity: 0; transform: translateY(18px); }
+    .js-fade .fade-section.visible { opacity: 1; transform: translateY(0); }
 
     /* ── Misc ──────────────────────────────────────────────────── */
     .lang-badge {
@@ -734,7 +735,8 @@
     <section id="presentations" class="fade-section pt-16 pb-16 border-b border-stone-200 dark:border-stone-800">
       <p class="section-label mb-3">Presentations</p>
       <h2 class="text-4xl font-serif text-stone-900 dark:text-stone-100 mb-4" style="font-weight:400">Slides & Decks</h2>
-      <p class="text-stone-500 dark:text-stone-400 text-sm mb-8">Export your .pptx files as PDF, place in <code class="bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-xs">assets/presentations/</code>, and update the list below.</p>
+      <p class="text-stone-500 dark:text-stone-400 text-sm mb-8">Export your .pptx files as PDF, place in 
+      <code class="bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-xs">assets/presentations/</code>, and update the list below.</p>
 
       <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-5" id="presentations-grid"></div>
     </section>
@@ -743,7 +745,8 @@
     <section id="gallery" class="fade-section pt-16">
       <p class="section-label mb-3">Visual Portfolio</p>
       <h2 class="text-4xl font-serif text-stone-900 dark:text-stone-100 mb-4" style="font-weight:400">Photo Gallery</h2>
-      <p class="text-stone-500 dark:text-stone-400 text-sm mb-8">Add your photos to <code class="bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-xs">assets/photos/</code> and update the list in the script section below.</p>
+      <p class="text-stone-500 dark:text-stone-400 text-sm mb-8">Add your photos to 
+      <code class="bg-stone-100 dark:bg-stone-800 px-1.5 py-0.5 rounded text-xs">assets/photos/</code> and update the list in the script section below.</p>
 
       <div class="masonry" id="photo-gallery"></div>
 
@@ -1043,10 +1046,13 @@
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     //  FADE IN ON SCROLL
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    const observer = new IntersectionObserver(entries => {
-      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
-    }, { threshold: 0.06 });
-    document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+    if ('IntersectionObserver' in window) {
+      document.documentElement.classList.add('js-fade');
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+      }, { threshold: 0.04, rootMargin: '0px 0px -20px 0px' });
+      document.querySelectorAll('.fade-section').forEach(el => observer.observe(el));
+    }
 
     // Active nav pill
     const sections = ['about','experience','education','skills','reports','presentations','gallery'];
