@@ -288,7 +288,7 @@
       <div class="flex-shrink-0">
         <div class="profile-ring shadow-2xl">
           <img
-            src="/resume/assets/photos/profile.jpg"
+            src="/assets/profile.jpg"
             alt="Sansara Klinsukont"
             onerror="this.src='https://ui-avatars.com/api/?name=Sansara+Klinsukont&size=180&background=1d6660&color=e5b26a&font-size=0.32&bold=true'"
             class="w-44 h-44 rounded-full object-cover object-center block"
@@ -794,7 +794,7 @@
 
     const reports = [
       {
-        file:  BASE + "assets/reports/report.pdf",
+        file:  BASE + "/assets/report.pdf",
         title: "Does VH298 glue VHL to CDO1?",
         date:  "August 2025",
         desc:  "Findings from the CeTPD summer research placement.",
@@ -804,7 +804,7 @@
 
     const presentations = [
       {
-        file:  BASE + "assets/presentations/slides.pdf",
+        file:  BASE + "/assets/slides.pdf",
         title: "CeTPD Research Presentation",
         date:  "August 2025",
         desc:  "End-of-placement research summary presented to the Ciulli group at the University of Dundee.",
@@ -813,9 +813,9 @@
     ];
 
     const galleryPhotos = [
-      { src: BASE + "assets/photos/photo2.jpg", caption: "(left to right) Dr Lianne Wieske, Me, Prof. Alessio Ciulli at CeTPD, Dundee — August 2025" },
-      { src: BASE + "assets/photos/photo3.jpg", caption: "smFRET microscopy project, St Andrews" },
-      { src: BASE + "assets/photos/photo1.jpg", caption: "Me, Prof. Yong at King Chulalongkorn Memorial Hospital, Bangkok" },
+      { src: BASE + "/assets/photo2.jpg", caption: "(left to right) Dr Lianne Wieske, Me, Prof. Alessio Ciulli at CeTPD, Dundee — August 2025" },
+      { src: BASE + "/assets/photo3.jpg", caption: "smFRET microscopy project, St Andrews" },
+      { src: BASE + "/assets/photo1.jpg", caption: "Me, Prof. Yong at King Chulalongkorn Memorial Hospital, Bangkok" },
     ];
 
     // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -827,7 +827,7 @@
     if (reports.length === 0) {
       reportsEl.innerHTML = `<div class="card p-8 text-center sm:col-span-2 lg:col-span-3">
         <i class="fa-solid fa-file-pdf text-4xl mb-3" style="color:#2a9d8f;opacity:0.4"></i>
-        <p class="text-stone-500 dark:text-stone-400 text-sm">Add PDF files to <strong>assets/reports/</strong> and update the <code>reports</code> array in the script.</p>
+        <p class="text-stone-500 dark:text-stone-400 text-sm">Add PDF files to <strong>assets/</strong> and update the <code>reports</code> array in the script.</p>
       </div>`;
     } else {
       reports.forEach(r => {
@@ -859,7 +859,7 @@
     if (presentations.length === 0) {
       presEl.innerHTML = `<div class="card p-8 text-center sm:col-span-2 lg:col-span-3">
         <i class="fa-solid fa-file-powerpoint text-4xl mb-3" style="color:#2a9d8f;opacity:0.4"></i>
-        <p class="text-stone-500 dark:text-stone-400 text-sm">Export .pptx files as PDF, add to <strong>assets/presentations/</strong>, and update the <code>presentations</code> array in the script.</p>
+        <p class="text-stone-500 dark:text-stone-400 text-sm">Export .pptx files as PDF, add to <strong>/assets/</strong>, and update the <code>presentations</code> array in the script.</p>
       </div>`;
     } else {
       presentations.forEach(p => {
